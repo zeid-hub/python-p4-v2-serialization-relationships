@@ -1,4 +1,4 @@
-# Serialization and Relationships
+# Serialization and Relationships : Code-Along
 
 ## Learning Goals
 
