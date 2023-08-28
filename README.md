@@ -185,6 +185,36 @@ $ z1.to_dict()
 Just like that, we have a dictionary representation of a Python SQLAlchemy
 object. This will be much easier for other applications to use!
 
+## `serialize_only`
+
+We can also use the `serialize_only` class attribute on a model to specify
+fields to include in serialization. For example, we can serialize the
+zookeeper's id and name, along with the name and species of each associated
+animal (don't modify your code, this is just an example of `serialize_only`).
+
+```py
+class Zookeeper(db.Model, SerializerMixin):
+    __tablename__ = 'zookeepers'
+    serialize_only = ('id', 'name', 'animals.name', 'animals.species',)
+    serialize_rules = ()
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, unique=True)
+    birthday = db.Column(db.Date)
+
+    animals = db.relationship('Animal', back_populates='zookeeper')
+
+```
+
+Calling `to_dict()` on the zookeeper results in the following:
+
+```console
+>>> z1 = Zookeeper.query.first()
+>>> z1.to_dict()
+{'id': 1, 'animals': [{'species': 'Elephant', 'name': 'Paul'}, {'species': 'Hippo', 'name': 'Jennifer'}, {'species': 'Elephant', 'name': 'Carol'}, {'species': 'Tiger', 'name': 'Tracey'}, {'species': 'Bear', 'name': 'Derrick'}, {'species': 'Snake', 'name': 'Debra'}, {'species': 'Monkey', 'name': 'Jasmine'}], 'name': 'Johnny Smith'}
+>>>
+```
+
 ### `to_dict()`
 
 `to_dict()` is a simple method: it takes a SQLAlchemy object, turns its columns
